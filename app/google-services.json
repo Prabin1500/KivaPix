@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "591575291149",
+    "project_id": "kivapix-24d9b",
+    "storage_bucket": "kivapix-24d9b.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:591575291149:android:ebf9ef28c03eeb2d308c44",
+        "android_client_info": {
+          "package_name": "com.example.kivapix"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDuiRlZC-DYe46mE79Yjg7vJdN3wiacSVg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
