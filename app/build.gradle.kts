@@ -3,6 +3,7 @@ plugins {
     id("org.jetbrains.kotlin.android")
     id("ly.img.android.sdk").version("10.10.0")
     id("com.google.devtools.ksp")
+    id("com.google.gms.google-services")
 }
 
 IMGLY.configure {
@@ -113,4 +114,9 @@ dependencies {
 
     //Navigation
     implementation("androidx.navigation:navigation-compose:2.7.1")
+
+    // Import the Firebase BoM
+    implementation(platform("com.google.firebase:firebase-bom:33.7.0"))
+    implementation("com.google.firebase:firebase-analytics")
+    implementation("com.google.firebase:firebase-firestore-ktx")
 }

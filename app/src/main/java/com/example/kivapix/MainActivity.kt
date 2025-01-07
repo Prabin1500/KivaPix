@@ -13,12 +13,16 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.kivapix.Screen.CalendarEventScreen
 import com.example.kivapix.Screen.EventScreen
 import com.example.kivapix.ui.theme.KivaPixTheme
+import com.google.firebase.firestore.FirebaseFirestore
 
 class MainActivity : ComponentActivity() {
+    private lateinit var db: FirebaseFirestore
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        db = FirebaseFirestore.getInstance()
         setContent {
             val navController = rememberNavController ()
             KivaPixTheme {
@@ -33,6 +37,9 @@ class MainActivity : ComponentActivity() {
                     ) {
                         composable("Home") {
                             EventScreen(navController)
+                        }
+                        composable("Calender") {
+                            CalendarEventScreen(navController)
                         }
                     }
                 }
