@@ -27,6 +27,7 @@ import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Event
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.rounded.Home
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
@@ -49,11 +50,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -63,12 +68,14 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import com.example.kivapix.R
 import com.example.kivapix.utils.Event
-import com.example.kivapix.utils.FireStoreProvider
 import com.example.kivapix.viewmodel.EventRepository
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EventScreen(navController: NavHostController) {
+    val robotoFontFamily = FontFamily(
+        Font(R.font.robotomono_bold),
+    )
     val eventRepository = EventRepository()
     val eventState = remember { mutableStateOf<List<Event>>(emptyList()) }
 
@@ -96,6 +103,7 @@ fun EventScreen(navController: NavHostController) {
                                 text = "KIVAPIX",
                                 style = MaterialTheme.typography.titleLarge,
                                 fontWeight = FontWeight.Bold,
+                                fontFamily = robotoFontFamily,
                                 color = Color(0xFF047E2D),
                                 modifier = Modifier.align(Alignment.Center)
                             )
@@ -112,6 +120,14 @@ fun EventScreen(navController: NavHostController) {
             modifier = Modifier
                 .padding(padding)
                 .fillMaxSize()
+                .background(
+                    brush = Brush.verticalGradient(
+                        colors = listOf(
+                            Color(0xFF8F9CFA),
+                            Color(0xFFDBBDE7)
+                        )
+                    )
+                )
         ) {
             SearchBar()
             PopularEvents()
@@ -130,9 +146,13 @@ fun EventScreen(navController: NavHostController) {
 
 @Composable
 fun PopularEvents() {
+    val robotoFontFamily = FontFamily(
+        Font(R.font.robotomono_bold),
+    )
     Text(
         text = "Events Nearby",
         fontSize = 22.sp,
+        fontFamily = robotoFontFamily,
         fontWeight = FontWeight.Bold,
         color = Color.Black,
         modifier = Modifier.padding(start = 16.dp, top = 16.dp)
@@ -153,13 +173,13 @@ fun BottomAppBar(navController: NavHostController) {
             .background(Color.White)
             .fillMaxWidth()
             .height(45.dp)
-            .padding(5.dp)
+            .padding(8.dp)
             .clip(RoundedCornerShape(16.dp)),
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        NavigationItem(navController, Screen.Home, Icons.Default.Home, "Home")
-        NavigationItem(navController, Screen.Calender, Icons.Default.Event, "Calender")
-        NavigationItem(navController, Screen.Profile, Icons.Default.AccountCircle, "Profile")
+        NavigationItem(navController, Screen.Home, painter = painterResource(id = R.drawable.home_icon), "Home")
+        NavigationItem(navController, Screen.Calender, painter = painterResource(id = R.drawable.upcoming_event), "Calender")
+        NavigationItem(navController, Screen.Profile, painter = painterResource(id = R.drawable.profile_icon), "Profile")
     }
 }
 
@@ -167,13 +187,14 @@ fun BottomAppBar(navController: NavHostController) {
 fun NavigationItem(
     navController: NavHostController,
     screen: Screen,
-    icon: ImageVector,
+    painter: Painter,
+    //icon: ImageVector,
     label: String
 ) {
     IconButton(
         onClick = { navController.navigate(screen.route) }
     ) {
-        Icon(imageVector = icon, contentDescription = label)
+        Icon(painter = painter, contentDescription = label)
     }
 }
 

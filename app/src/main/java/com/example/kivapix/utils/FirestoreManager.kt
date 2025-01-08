@@ -10,8 +10,10 @@ object FireStoreProvider {
 }
 
 data class Event(
+    val id : String = "",
     val name: String = "",
     val location: String = "",
     val type : String = "",
+    val participants : Int = 0,
     val date: Timestamp = Timestamp.now()
 )

@@ -119,4 +119,8 @@ dependencies {
     implementation(platform("com.google.firebase:firebase-bom:33.7.0"))
     implementation("com.google.firebase:firebase-analytics")
     implementation("com.google.firebase:firebase-firestore-ktx")
+
+    implementation("com.airbnb.android:lottie-compose:6.1.0")
+    implementation("androidx.compose.ui:ui-text-google-fonts:1.3.0")
+
 }

@@ -33,6 +33,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -43,6 +45,12 @@ import java.time.format.DateTimeFormatter
 
 @Composable
 fun SearchBar() {
+    val robotoFontFamily = FontFamily(
+        Font(R.font.robotomono_bold),
+    )
+    val robotoFontFamilyRegular = FontFamily(
+        Font(R.font.robotomono_regular),
+    )
     var searchText by remember { mutableStateOf("") }
     val currentDate = LocalDate.now().format(DateTimeFormatter.ofPattern("'Today,' d MMMM"))
     Column {
@@ -53,12 +61,14 @@ fun SearchBar() {
                 Text(
                     text = "$currentDate",
                     fontSize = 14.sp,
+                    fontFamily = robotoFontFamilyRegular,
                     color = Color(0xFF047E2D),
                     modifier = Modifier.padding(start = 16.dp, top = 16.dp)
                 )
                 Text(
-                    text = "Good Morning, {User}",
+                    text = "Good Morning Guest",
                     fontSize = 22.sp,
+                    fontFamily = robotoFontFamily,
                     fontWeight = FontWeight.Bold,
                     color = Color.Black,
                     modifier = Modifier.padding(start = 16.dp, top = 10.dp, bottom = 10.dp)
@@ -79,7 +89,7 @@ fun SearchBar() {
                 .padding(16.dp)
                 .fillMaxWidth()
                 .height(45.dp)
-                .background(Color.White, RoundedCornerShape(12.dp))
+                .background(Color.White, RoundedCornerShape(50.dp))
                 .border(width = 1.dp, Color.LightGray, RoundedCornerShape(50.dp)),
             verticalAlignment = Alignment.CenterVertically,
         ) {
@@ -96,7 +106,7 @@ fun SearchBar() {
                 textStyle = TextStyle(
                     fontSize = 14.sp,
                     color = Color.Black,
-                    textAlign = TextAlign.Start // Align the text to the start of the field
+                    textAlign = TextAlign.Start
                 ),
                 modifier = Modifier
                     .weight(1f)
@@ -106,7 +116,7 @@ fun SearchBar() {
                     Box(modifier = Modifier.fillMaxSize()) {
                         if (searchText.isEmpty()) {
                             Text(
-                                text = "Search events", // This is the hint text
+                                text = "Search events",
                                 color = Color.Gray,
                                 style = MaterialTheme.typography.bodySmall,
                                 modifier = Modifier

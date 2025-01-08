@@ -26,6 +26,8 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
@@ -37,6 +39,13 @@ import java.util.Locale
 
 @Composable
 fun HomeScreenEventCard(navController: NavHostController, event: Event) {
+    val robotoFontFamily = FontFamily(
+        Font(R.font.robotomono_bold),
+    )
+
+    val robotoFontFamilyRegular = FontFamily(
+        Font(R.font.robotomono_regular),
+    )
     val date: Date = event.date.toDate()
     val formattedDate = SimpleDateFormat("dd MMM yyyy, HH:mm", Locale.getDefault()).format(date)
 
@@ -74,12 +83,12 @@ fun HomeScreenEventCard(navController: NavHostController, event: Event) {
                 Text(
                     text = "${event.name}",
                     fontWeight = FontWeight.Bold,
+                    fontFamily = robotoFontFamily,
                     style = MaterialTheme.typography.titleMedium,
-                    modifier = Modifier.padding(top = 8.dp)
                 )
                 Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(top = 5.dp)) {
                     Text("📅", color = Color.Black)
-                    Text(text = formattedDate, style = MaterialTheme.typography.bodyMedium, color = Color.Black, modifier = Modifier.padding(start = 10.dp))
+                    Text(text = formattedDate, fontFamily = robotoFontFamilyRegular, style = MaterialTheme.typography.bodyMedium, color = Color.Black, modifier = Modifier.padding(start = 10.dp, top = 8.dp))
                 }
                 Row (verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(top = 5.dp)) {
                     //Text("", color = Color.Black)
@@ -89,6 +98,7 @@ fun HomeScreenEventCard(navController: NavHostController, event: Event) {
                         text = "${event.location}",
                         style = MaterialTheme.typography.bodyMedium,
                         color = Color.Black,
+                        fontFamily = robotoFontFamilyRegular,
                         modifier = Modifier.padding(start = 10.dp)
                     )
                 }
@@ -97,7 +107,7 @@ fun HomeScreenEventCard(navController: NavHostController, event: Event) {
 
                 Button(
                     onClick = {
-                        navController.navigate("Details")
+                        navController.navigate("Details/${event.id}")
                     },
                     modifier = Modifier.fillMaxWidth()
                 ) {

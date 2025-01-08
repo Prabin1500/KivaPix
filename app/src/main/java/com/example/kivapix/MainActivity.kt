@@ -1,5 +1,6 @@
 package com.example.kivapix
 
+import android.media.metrics.Event
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -14,6 +15,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.kivapix.Screen.CalendarEventScreen
+import com.example.kivapix.Screen.EventDetailScreen
 import com.example.kivapix.Screen.EventScreen
 import com.example.kivapix.ui.theme.KivaPixTheme
 import com.google.firebase.firestore.FirebaseFirestore
@@ -40,6 +42,10 @@ class MainActivity : ComponentActivity() {
                         }
                         composable("Calender") {
                             CalendarEventScreen(navController)
+                        }
+                        composable("Details/{documentId}") {navBackStackEntry ->
+                            val eventId = navBackStackEntry.arguments?.getString("documentId")
+                            EventDetailScreen(navController, eventId)
                         }
                     }
                 }
