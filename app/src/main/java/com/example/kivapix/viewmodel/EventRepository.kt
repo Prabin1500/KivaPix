@@ -29,7 +29,7 @@ class EventRepository {
     fun getEventByDocumentId(eventId: String, callback: (Event?) -> Unit) {
         db.collection("Event")
             .document(eventId)  // Get the document by its ID
-            .get()  // Fetch the document
+            .get()
             .addOnSuccessListener { document ->
                 if (document.exists()) {
                     val event = document.toObject(Event::class.java)  // Map Firestore document to event object

@@ -41,6 +41,8 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -54,7 +56,18 @@ import java.util.Date
 import java.util.Locale
 
 @Composable
-fun EventDetailScreen(navController: NavHostController, eventId : String?) {
+fun EventDetailScreen(navController: NavHostController, documentId : String?) {
+    val eventRepository = EventRepository()
+
+    var event by remember { mutableStateOf<Event?>(null) }
+
+    LaunchedEffect(Unit) {
+        documentId?.let {
+            eventRepository.getEventByDocumentId(documentId) { e ->
+                event = e  // Update the event state with the fetched event
+            }
+        }
+    }
 
     Scaffold(
         bottomBar = { BottomAppBar(navController) }
@@ -72,35 +85,25 @@ fun EventDetailScreen(navController: NavHostController, eventId : String?) {
                 )
                 .padding(innerPadding)
         ) {
-            CardSection(eventId)
+            CardSection(event)
             LazyColumn(
                 modifier = Modifier
                     .padding(top = 10.dp)
                     .fillMaxSize()
                     .weight(1f)
             ) {
-                item { DescriptionSection() }
+                item { DescriptionSection(event) }
                 item { LocationSection() }
-                item { BottomSection(navController) }
+                item { BottomSection(navController, event?.name) }
             }
         }
     }
 }
 
 @Composable
-fun CardSection(documentId:String?){
-    val eventRepository = EventRepository()
+fun CardSection(event : Event?){
 
-    var event by remember { mutableStateOf<Event?>(null) }
     var formattedDate by remember { mutableStateOf<String?>(null) }
-
-    LaunchedEffect(Unit) {
-        documentId?.let {
-            eventRepository.getEventByDocumentId(documentId) { e ->
-                event = e  // Update the event state with the fetched event
-            }
-        }
-    }
 
     if (event != null) {
         val date: Date? = event?.date?.toDate()  // Assuming `event?.date` is a timestamp
@@ -142,15 +145,15 @@ fun CardSection(documentId:String?){
                 Spacer(modifier = Modifier.height(10.dp))
                 Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(bottom = 8.dp)) {
                     Icon(Icons.Default.LocationOn, contentDescription = "Location", tint = Color.Black)
-                    Text(text = "${event?.location}", style = MaterialTheme.typography.bodyMedium, modifier = Modifier.padding(start = 20.dp))
+                    Text(text = "${event?.location}", style = MaterialTheme.typography.bodyMedium, modifier = Modifier.padding(start = 16.dp))
                 }
                 Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(bottom = 8.dp)) {
                     Icon(Icons.Default.DateRange, contentDescription = "Date", tint = Color.Black)
-                    Text(text = "$formattedDate", style = MaterialTheme.typography.bodyMedium, modifier = Modifier.padding(start = 20.dp))
+                    Text(text = "$formattedDate", style = MaterialTheme.typography.bodyMedium, modifier = Modifier.padding(start = 16.dp))
                 }
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Icon(Icons.Default.Group, contentDescription = "Participants", tint = Color.Black)
-                    Text(text = "${event?.participants} Participants", style = MaterialTheme.typography.bodyMedium, modifier = Modifier.padding(start = 20.dp))
+                    Text(text = "${event?.participants} Participants", style = MaterialTheme.typography.bodyMedium, modifier = Modifier.padding(start = 16.dp))
                 }
             }
         }
@@ -158,10 +161,10 @@ fun CardSection(documentId:String?){
 }
 
 @Composable
-fun DescriptionSection() {
+fun DescriptionSection(event: Event?) {
     var expanded by remember { mutableStateOf(false) }
-    val descriptionText = "Lorem Ipsum is simply dummy text of the printing and typesetting industry..."
-    val displayText = if (expanded) descriptionText else descriptionText.take(80) // Adjust the number for truncation
+    val descriptionText = "${event?.description}"
+    val displayText = if (expanded) descriptionText else descriptionText.take(45) // Adjust the number for truncation
 
     Column(modifier = Modifier.padding(16.dp)) {
         Text(
@@ -172,11 +175,9 @@ fun DescriptionSection() {
         Text(
             text = buildAnnotatedString {
                 append(displayText)
-                if (!expanded) {
-                    append("...")
-                }
                 pushStyle(SpanStyle(color = Color.Black, fontSize = 12.sp))
-                append(if (expanded) " Show Less" else " Show More")
+                append(
+                    if (expanded) " Show Less" else "...Show More")
                 pop()
             },
             style = MaterialTheme.typography.bodyMedium,
@@ -211,7 +212,10 @@ fun LocationSection(){
 }
 
 @Composable
-fun BottomSection(navController: NavHostController){
+fun BottomSection(navController: NavHostController, name:String?){
+    val robotoFontFamily = FontFamily(
+        Font(R.font.robotomono_bold),
+    )
     Column(
         modifier = Modifier
             .fillMaxWidth(),
@@ -221,15 +225,22 @@ fun BottomSection(navController: NavHostController){
             onClick = { /* Accept Event */ },
             modifier = Modifier.fillMaxWidth(0.6f)
         ) {
-            Text("+ Accept this event")
+            Text(text = "+ Accept this event",
+                fontFamily = robotoFontFamily,
+                style = MaterialTheme.typography.bodyMedium
+            )
         }
         OutlinedButton(
             onClick = {
-                navController.navigate("Gallery")
+                navController.navigate("Gallery/${name}")
             },
             modifier = Modifier.fillMaxWidth(0.6f)
         ) {
-            Text("View Gallery")
+            Text(
+                text = "View Gallery",
+                fontFamily = robotoFontFamily,
+                style = MaterialTheme.typography.bodyMedium
+            )
         }
     }
 }

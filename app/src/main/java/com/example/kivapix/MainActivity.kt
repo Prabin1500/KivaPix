@@ -17,6 +17,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.kivapix.Screen.CalendarEventScreen
 import com.example.kivapix.Screen.EventDetailScreen
 import com.example.kivapix.Screen.EventScreen
+import com.example.kivapix.Screen.GalleryScreen
 import com.example.kivapix.ui.theme.KivaPixTheme
 import com.google.firebase.firestore.FirebaseFirestore
 
@@ -46,6 +47,10 @@ class MainActivity : ComponentActivity() {
                         composable("Details/{documentId}") {navBackStackEntry ->
                             val eventId = navBackStackEntry.arguments?.getString("documentId")
                             EventDetailScreen(navController, eventId)
+                        }
+                        composable("Gallery/{eventName}") {navBackStackEntry ->
+                            val name = navBackStackEntry.arguments?.getString("eventName")
+                            GalleryScreen(navController, name)
                         }
                     }
                 }

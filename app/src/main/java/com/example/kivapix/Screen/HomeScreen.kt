@@ -40,6 +40,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -88,16 +89,15 @@ fun EventScreen(navController: NavHostController) {
     Scaffold(
         topBar = {
             Surface(
-                shadowElevation = 8.dp,
-                color = MaterialTheme.colorScheme.primary,
+                shadowElevation = 12.dp,
                 modifier = Modifier
-                    .height(50.dp)
+                    .height(40.dp)
             ) {
                 TopAppBar(
                     title = {
                         Box(
                             modifier = Modifier
-                                .fillMaxSize()
+                                .fillMaxSize(),
                         ) {
                             Text(
                                 text = "KIVAPIX",
@@ -108,7 +108,10 @@ fun EventScreen(navController: NavHostController) {
                                 modifier = Modifier.align(Alignment.Center)
                             )
                         }
-                    }
+                    },
+                    colors = TopAppBarDefaults.topAppBarColors(
+                        containerColor = Color(0xFF8F9CFA)
+                    )
                 )
             }
         },
@@ -151,7 +154,7 @@ fun PopularEvents() {
     )
     Text(
         text = "Events Nearby",
-        fontSize = 22.sp,
+        style = MaterialTheme.typography.titleLarge,
         fontFamily = robotoFontFamily,
         fontWeight = FontWeight.Bold,
         color = Color.Black,

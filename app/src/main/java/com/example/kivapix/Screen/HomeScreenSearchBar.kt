@@ -60,14 +60,15 @@ fun SearchBar() {
             Column {
                 Text(
                     text = "$currentDate",
-                    fontSize = 14.sp,
+                    style = MaterialTheme.typography.bodyMedium,
+                    fontWeight = FontWeight.Bold,
                     fontFamily = robotoFontFamilyRegular,
                     color = Color(0xFF047E2D),
                     modifier = Modifier.padding(start = 16.dp, top = 16.dp)
                 )
                 Text(
                     text = "Good Morning Guest",
-                    fontSize = 22.sp,
+                    style = MaterialTheme.typography.titleLarge,
                     fontFamily = robotoFontFamily,
                     fontWeight = FontWeight.Bold,
                     color = Color.Black,

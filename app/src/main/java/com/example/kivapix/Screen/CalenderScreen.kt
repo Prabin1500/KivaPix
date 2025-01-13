@@ -1,6 +1,5 @@
 package com.example.kivapix.Screen
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -8,7 +7,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -28,19 +26,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.example.kivapix.R
 import androidx.navigation.NavHostController
-import com.airbnb.lottie.compose.LottieAnimation
-import com.airbnb.lottie.compose.LottieCompositionSpec
-import com.airbnb.lottie.compose.animateLottieCompositionAsState
-import com.airbnb.lottie.compose.rememberLottieComposition
+import com.example.kivapix.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CalendarEventScreen(navController: NavHostController) {
-
     Scaffold(
         topBar = {
             Surface(
@@ -90,6 +85,13 @@ fun CalendarEventScreen(navController: NavHostController) {
 
 @Composable
 fun NoEvent(){
+    val robotoFontFamily = FontFamily(
+        Font(R.font.robotomono_bold),
+    )
+
+    val robotoFontFamilyRegular = FontFamily(
+        Font(R.font.robotomono_regular),
+    )
     Card(
         shape = RoundedCornerShape(16.dp),
         modifier = Modifier
@@ -103,12 +105,17 @@ fun NoEvent(){
                 .padding(16.dp)
                 .fillMaxWidth(),
         ) {
-            Icon(Icons.Default.CalendarToday, contentDescription = "Location", tint = Color.Black)
+            Icon(
+                Icons.Default.CalendarToday,
+                contentDescription = "Calendar",
+                tint = Color.Black
+            )
             Spacer(modifier = Modifier.width(16.dp))
 
             Column{
                 Text(
                     text = "No upcoming events",
+                    fontFamily = robotoFontFamily,
                     fontWeight = FontWeight.Bold,
                     style = MaterialTheme.typography.titleLarge,
                 )
@@ -121,6 +128,7 @@ fun NoEvent(){
                 Text(
                     text = "Select an event",
                     fontWeight = FontWeight.Medium,
+                    fontFamily = robotoFontFamilyRegular,
                     style = MaterialTheme.typography.titleMedium,
                     modifier = Modifier.padding(top = 8.dp),
                     color = Color(0xFF047E2D),
