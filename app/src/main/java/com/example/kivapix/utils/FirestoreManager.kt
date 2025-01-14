@@ -2,6 +2,7 @@ package com.example.kivapix.utils
 
 import android.net.Uri
 import android.util.Log
+import com.google.android.gms.tasks.Tasks
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.Timestamp
 import com.google.firebase.storage.FirebaseStorage
@@ -26,7 +27,7 @@ object StorageManager {
     // Upload File to Firebase Storage
     fun uploadFile(
         fileUri: Uri,
-        folderName: String = "uploads",
+        folderName: String? ,
         onProgress: (Float) -> Unit,
         onSuccess: (String) -> Unit,
         onFailure: (Exception) -> Unit
@@ -50,18 +51,24 @@ object StorageManager {
     }
 
     // Download File from Firebase Storage
-    fun downloadFile(
-        fileName: String,
-        folderName: String = "uploads",
-        onSuccess: (ByteArray) -> Unit,
+    fun retrieveFile(
+        folderName: String?,
+        onSuccess: (List<String>) -> Unit,
         onFailure: (Exception) -> Unit
     ) {
-        val fileRef = storageRef.child("$folderName/$fileName")
-        fileRef.getBytes(Long.MAX_VALUE).addOnSuccessListener { data ->
-            onSuccess(data)
-        }.addOnFailureListener { exception ->
-            onFailure(exception)
-        }
+        val folderRef = storageRef.child("$folderName")
+        folderRef.listAll()
+            .addOnSuccessListener { result ->
+                val urls = mutableListOf<String>()
+                val tasks = result.items.map { fileRef ->
+                    fileRef.downloadUrl
+                        .addOnSuccessListener { url -> urls.add(url.toString()) }
+                }
+                // Wait for all URLs to be fetched
+                Tasks.whenAllComplete(tasks)
+                    .addOnSuccessListener { onSuccess(urls) }
+            }
+            .addOnFailureListener { exception -> onFailure(exception) }
     }
 
     // Delete File from Firebase Storage

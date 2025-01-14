@@ -94,7 +94,7 @@ fun EventDetailScreen(navController: NavHostController, documentId : String?) {
             ) {
                 item { DescriptionSection(event) }
                 item { LocationSection() }
-                item { BottomSection(navController, event?.name) }
+                item { BottomSection(navController, documentId) }
             }
         }
     }
@@ -212,7 +212,7 @@ fun LocationSection(){
 }
 
 @Composable
-fun BottomSection(navController: NavHostController, name:String?){
+fun BottomSection(navController: NavHostController, documentId: String?){
     val robotoFontFamily = FontFamily(
         Font(R.font.robotomono_bold),
     )
@@ -232,7 +232,7 @@ fun BottomSection(navController: NavHostController, name:String?){
         }
         OutlinedButton(
             onClick = {
-                navController.navigate("Gallery/${name}")
+                navController.navigate("Gallery/${documentId}")
             },
             modifier = Modifier.fillMaxWidth(0.6f)
         ) {

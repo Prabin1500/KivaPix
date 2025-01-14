@@ -1,5 +1,7 @@
 package com.example.kivapix.Screen
 
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -11,6 +13,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -18,6 +21,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CalendarMonth
@@ -30,7 +35,6 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
@@ -39,35 +43,28 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import coil.size.Size
+import coil.compose.AsyncImage
 import com.example.kivapix.R
 import com.example.kivapix.utils.StorageManager
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun GalleryScreen(navController: NavHostController, eventName : String?) {
+fun GalleryScreen(navController: NavHostController, documentId : String?) {
     var showBottomSheet by remember { mutableStateOf(false) }
     var selectedOption by remember { mutableStateOf("") }
     val robotoFontFamily = FontFamily(
@@ -77,7 +74,21 @@ fun GalleryScreen(navController: NavHostController, eventName : String?) {
     var uploadStatus by remember { mutableStateOf<String?>(null) }
     var progress by remember { mutableStateOf(0f) }
     var isUploading by remember { mutableStateOf(false) }
+    var imageUrls by remember { mutableStateOf<List<String>>(emptyList()) }
+    var isDownloading  by remember { mutableStateOf(true) }
 
+    LaunchedEffect(documentId) {
+        StorageManager.retrieveFile(
+            folderName = documentId,
+            onSuccess = { urls ->
+                imageUrls = urls
+                isDownloading = false
+            },
+            onFailure = { exception ->
+                isDownloading = false
+            }
+        )
+    }
     // Image Picker
     val imagePickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
@@ -85,7 +96,7 @@ fun GalleryScreen(navController: NavHostController, eventName : String?) {
         if (uri != null) {
             imageUri = uri
             isUploading = true // Start uploading
-            uploadImageToFirebase(uri,
+            uploadImageToFirebase(uri, documentId,
                 onProgress = { progressValue ->
                     progress = progressValue
                 },
@@ -136,21 +147,6 @@ fun GalleryScreen(navController: NavHostController, eventName : String?) {
         }
     ) {padding ->
         Box(modifier = Modifier.fillMaxSize().padding(padding)) {
-            if (uploadStatus != null) {
-                Snackbar(
-                    action = {
-                        Text(
-                            "Dismiss",
-                            color = Color.White,
-                            modifier = Modifier.clickable { uploadStatus = null }
-                        )
-                    },
-                    modifier = Modifier.padding(16.dp),
-                    containerColor = MaterialTheme.colorScheme.primary
-                ) {
-                    Text(text = "Image uploaded successfully", color = Color.White)
-                }
-            }
             // Modal Bottom Sheet
             if (showBottomSheet) {
                 OptionBottomSheet(
@@ -169,13 +165,66 @@ fun GalleryScreen(navController: NavHostController, eventName : String?) {
                 modifier = Modifier
                     .fillMaxSize()
             ) {
-                UploadProgressIndicator(isUploading = isUploading, progress = progress)
-
+                //UploadProgressIndicator(isUploading = isUploading, progress = progress)
+                if (isDownloading) {
+                    Box(modifier = Modifier.fillMaxSize()){
+                        CircularProgressIndicator(
+                            modifier = Modifier.width(64.dp),
+                            color = MaterialTheme.colorScheme.secondary,
+                            trackColor = MaterialTheme.colorScheme.surfaceVariant,
+                        )
+                    }
+                } else if (imageUrls.isEmpty()) {
+                    Text("No images found")
+                } else {
+                    LazyVerticalGrid(
+                        columns = GridCells.Fixed(3), // Adjust columns as needed
+                        modifier = Modifier.padding(5.dp)
+                    ) {
+                        items(imageUrls.size) { imageUrl ->
+                            ImageCard(imageUrl = imageUrls[imageUrl])
+                        }
+                    }
+                }
+            }
+            if (uploadStatus != null) {
+                Snackbar(
+                    action = {
+                        Text(
+                            "Dismiss",
+                            color = Color.White,
+                            modifier = Modifier.clickable { uploadStatus = null }
+                        )
+                    },
+                    modifier = Modifier.padding(16.dp),
+                    containerColor = MaterialTheme.colorScheme.primary
+                ) {
+                    Text(text = "Image uploaded successfully", color = Color.White)
+                }
             }
         }
-
     }
 }
+
+@Composable
+fun ImageCard(imageUrl: String) {
+    Card(
+        shape = RoundedCornerShape(8.dp),
+        elevation = CardDefaults.cardElevation(4.dp),
+        modifier = Modifier
+            .padding(8.dp)
+            .fillMaxWidth()
+            .aspectRatio(1f) // Make it a square
+    ) {
+        AsyncImage(
+            model = imageUrl,
+            contentDescription = null,
+            contentScale = ContentScale.Crop,
+            modifier = Modifier.fillMaxSize()
+        )
+    }
+}
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -253,9 +302,10 @@ fun OptionCard(
     }
 }
 
-fun uploadImageToFirebase(fileUri: Uri, onProgress: (Float) -> Unit, onComplete: (String) -> Unit) {
+fun uploadImageToFirebase(fileUri: Uri, folderName : String?, onProgress: (Float) -> Unit, onComplete: (String) -> Unit) {
     StorageManager.uploadFile(
         fileUri,
+        folderName,
         onSuccess = { downloadUrl ->
             onComplete("Image uploaded successfully: $downloadUrl")
         },
@@ -285,6 +335,9 @@ fun UploadProgressIndicator(isUploading: Boolean, progress: Float) {
                 )
                 Spacer(modifier = Modifier.height(16.dp))
                 CircularProgressIndicator(
+                    strokeWidth = 10.dp,
+                    trackColor = Color.LightGray,
+                    color = Color.Blue,
                     progress = progress / 100f,
                     modifier = Modifier.size(80.dp)
                 )
@@ -292,5 +345,7 @@ fun UploadProgressIndicator(isUploading: Boolean, progress: Float) {
         }
     }
 }
+
+
 
 
