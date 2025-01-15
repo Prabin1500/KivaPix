@@ -32,6 +32,7 @@ import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -79,11 +80,13 @@ fun EventScreen(navController: NavHostController) {
     )
     val eventRepository = EventRepository()
     val eventState = remember { mutableStateOf<List<Event>>(emptyList()) }
+    var isloading  by remember { mutableStateOf(true) }
 
     // Fetch events from FireStore
     LaunchedEffect(Unit) {
         eventRepository.getAllEvents { e ->
             eventState.value = e
+            isloading = false
         }
     }
     Scaffold(
@@ -100,7 +103,7 @@ fun EventScreen(navController: NavHostController) {
                                 .fillMaxSize(),
                         ) {
                             Text(
-                                text = "KIVAPIX",
+                                text = "$isloading",
                                 style = MaterialTheme.typography.titleLarge,
                                 fontWeight = FontWeight.Bold,
                                 fontFamily = robotoFontFamily,
@@ -134,16 +137,28 @@ fun EventScreen(navController: NavHostController) {
         ) {
             SearchBar()
             PopularEvents()
-            LazyColumn(
-                modifier = Modifier
-                    .padding(top = 16.dp, start = 16.dp, end = 16.dp)
-            ) {
-                items(eventState.value.size) { event ->
-                    HomeScreenEventCard(navController, eventState.value[event])
+            if(isloading){
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = "Events Loading...",
+                        style = MaterialTheme.typography.bodyLarge,
+                    )
+                }
+            }else{
+                LazyColumn(
+                    modifier = Modifier
+                        .padding(top = 16.dp, start = 16.dp, end = 16.dp)
+                ) {
+                    items(eventState.value.size) { event ->
+                        HomeScreenEventCard(navController, eventState.value[event])
+                    }
                 }
             }
         }
-
     }
 }
 

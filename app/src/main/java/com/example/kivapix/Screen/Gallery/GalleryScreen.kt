@@ -1,14 +1,10 @@
-package com.example.kivapix.Screen
+package com.example.kivapix.Screen.Gallery
 
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.net.Uri
+import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -20,15 +16,12 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.PhotoCamera
 import androidx.compose.material.icons.filled.PhotoLibrary
-import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -60,6 +53,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import com.example.kivapix.R
+import com.example.kivapix.Screen.BottomAppBar
 import com.example.kivapix.utils.StorageManager
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -84,7 +78,7 @@ fun GalleryScreen(navController: NavHostController, documentId : String?) {
                 imageUrls = urls
                 isDownloading = false
             },
-            onFailure = { exception ->
+            onFailure = {
                 isDownloading = false
             }
         )
@@ -130,7 +124,7 @@ fun GalleryScreen(navController: NavHostController, documentId : String?) {
                                 fontFamily = robotoFontFamily,
                                 fontWeight = FontWeight.Bold,
                                 color = Color.Black,
-                                modifier = Modifier.padding(start = 16.dp)
+                                modifier = Modifier.padding(start = 5.dp)
                             )
                         }
                     }
@@ -146,7 +140,9 @@ fun GalleryScreen(navController: NavHostController, documentId : String?) {
             }
         }
     ) {padding ->
-        Box(modifier = Modifier.fillMaxSize().padding(padding)) {
+        Box(modifier = Modifier
+            .fillMaxSize()
+            .padding(padding)) {
             // Modal Bottom Sheet
             if (showBottomSheet) {
                 OptionBottomSheet(
@@ -165,27 +161,8 @@ fun GalleryScreen(navController: NavHostController, documentId : String?) {
                 modifier = Modifier
                     .fillMaxSize()
             ) {
-                //UploadProgressIndicator(isUploading = isUploading, progress = progress)
-                if (isDownloading) {
-                    Box(modifier = Modifier.fillMaxSize()){
-                        CircularProgressIndicator(
-                            modifier = Modifier.width(64.dp),
-                            color = MaterialTheme.colorScheme.secondary,
-                            trackColor = MaterialTheme.colorScheme.surfaceVariant,
-                        )
-                    }
-                } else if (imageUrls.isEmpty()) {
-                    Text("No images found")
-                } else {
-                    LazyVerticalGrid(
-                        columns = GridCells.Fixed(3), // Adjust columns as needed
-                        modifier = Modifier.padding(5.dp)
-                    ) {
-                        items(imageUrls.size) { imageUrl ->
-                            ImageCard(imageUrl = imageUrls[imageUrl])
-                        }
-                    }
-                }
+                UploadProgressIndicator(isUploading = isUploading, progress = progress)
+                GalleryView(isDownloading = isDownloading, imageUrls = imageUrls)
             }
             if (uploadStatus != null) {
                 Snackbar(
@@ -203,25 +180,6 @@ fun GalleryScreen(navController: NavHostController, documentId : String?) {
                 }
             }
         }
-    }
-}
-
-@Composable
-fun ImageCard(imageUrl: String) {
-    Card(
-        shape = RoundedCornerShape(8.dp),
-        elevation = CardDefaults.cardElevation(4.dp),
-        modifier = Modifier
-            .padding(8.dp)
-            .fillMaxWidth()
-            .aspectRatio(1f) // Make it a square
-    ) {
-        AsyncImage(
-            model = imageUrl,
-            contentDescription = null,
-            contentScale = ContentScale.Crop,
-            modifier = Modifier.fillMaxSize()
-        )
     }
 }
 
@@ -298,50 +256,6 @@ fun OptionCard(
                 fontWeight = FontWeight.Medium,
                 style = MaterialTheme.typography.bodyLarge
             )
-        }
-    }
-}
-
-fun uploadImageToFirebase(fileUri: Uri, folderName : String?, onProgress: (Float) -> Unit, onComplete: (String) -> Unit) {
-    StorageManager.uploadFile(
-        fileUri,
-        folderName,
-        onSuccess = { downloadUrl ->
-            onComplete("Image uploaded successfully: $downloadUrl")
-        },
-        onFailure = { exception ->
-            onComplete("Image upload failed: ${exception.message}")
-        },
-        onProgress = { progressValue ->
-            onProgress(progressValue)
-        }
-    )
-}
-
-@Composable
-fun UploadProgressIndicator(isUploading: Boolean, progress: Float) {
-    if (isUploading) {
-        Box(
-            modifier = Modifier
-                .fillMaxSize(),
-            contentAlignment = Alignment.Center
-        ) {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Text(
-                    text = "Uploading image: ${progress.toInt()}%",
-                    style = MaterialTheme.typography.bodyLarge,
-                )
-                Spacer(modifier = Modifier.height(16.dp))
-                CircularProgressIndicator(
-                    strokeWidth = 10.dp,
-                    trackColor = Color.LightGray,
-                    color = Color.Blue,
-                    progress = progress / 100f,
-                    modifier = Modifier.size(80.dp)
-                )
-            }
         }
     }
 }
