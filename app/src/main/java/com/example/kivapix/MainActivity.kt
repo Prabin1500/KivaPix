@@ -17,6 +17,7 @@ import com.example.kivapix.Screen.CalendarEventScreen
 import com.example.kivapix.Screen.EventDetailScreen
 import com.example.kivapix.Screen.EventScreen
 import com.example.kivapix.Screen.Gallery.GalleryScreen
+import com.example.kivapix.Screen.SingleImageScreen
 import com.example.kivapix.ui.theme.KivaPixTheme
 import com.google.firebase.firestore.FirebaseFirestore
 
@@ -50,6 +51,10 @@ class MainActivity : ComponentActivity() {
                         composable("Gallery/{eventName}") {navBackStackEntry ->
                             val name = navBackStackEntry.arguments?.getString("eventName")
                             GalleryScreen(navController, name)
+                        }
+                        composable("SingleImage/{imageUrl}") {navBackStackEntry ->
+                            val image = navBackStackEntry.arguments?.getString("imageUrl")
+                            SingleImageScreen(image, navController)
                         }
                     }
                 }

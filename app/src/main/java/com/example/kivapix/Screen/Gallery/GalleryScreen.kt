@@ -162,7 +162,7 @@ fun GalleryScreen(navController: NavHostController, documentId : String?) {
                     .fillMaxSize()
             ) {
                 UploadProgressIndicator(isUploading = isUploading, progress = progress)
-                GalleryView(isDownloading = isDownloading, imageUrls = imageUrls)
+                GalleryView(isDownloading = isDownloading, imageUrls = imageUrls, navController)
             }
             if (uploadStatus != null) {
                 Snackbar(
