@@ -103,7 +103,7 @@ fun EventScreen(navController: NavHostController) {
                                 .fillMaxSize(),
                         ) {
                             Text(
-                                text = "$isloading",
+                                text = "KivaPix",
                                 style = MaterialTheme.typography.titleLarge,
                                 fontWeight = FontWeight.Bold,
                                 fontFamily = robotoFontFamily,
